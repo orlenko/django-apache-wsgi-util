@@ -112,7 +112,7 @@ def check_dir(dirname, pw_uid):
     dirname = p(dirname)
     log.debug('Checking directory %s' % dirname)
     if not os.path.isdir(dirname):
-        os.makedirs(dirname, 0775)
+        os.makedirs(dirname, 0740)
     os.chown(dirname, pw_uid.pw_uid, pw_uid.pw_gid)
 
 
@@ -248,7 +248,7 @@ def check_db_schema(project_dir):
     log.debug('Updating database schema from %s' % project_dir)
     cwd = os.getcwd()
     os.chdir(project_dir)
-    for cmd in ('syncdb', 'migrate'):
+    for cmd in ('syncdb', 'migrate -all'):
         full_cmd = '%s manage.py %s' % (sys.executable, cmd)
         result = subprocess.call(full_cmd, shell=True)
         log.debug('%s returned: %s' % (full_cmd, result))
@@ -324,7 +324,7 @@ def init_app(opt):
     check_dir(p(j(opt.approot, app_name, 'uploads')), pwd.getpwnam(opt.apacheuser))
     check_log_dir(opt.approot, app_name, opt.apacheuser)
     wsgi_path = p(j(opt.approot, app_name, 'wsgi.py'))
-    if opt.settings_dir and opt.settings_dir != opt.project_dir:
+    if opt.settings_dir and (opt.settings_dir != opt.project_dir):
         wsgi_app_name = os.path.basename(opt.settings_dir)
         wsgi_path = p(j(opt.approot, app_name, wsgi_app_name, 'wsgi.py'))
     check_apache_site(opt.sitesdir, opt.domain, app_name, opt.approot, wsgi_path)
