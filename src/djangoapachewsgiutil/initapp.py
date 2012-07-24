@@ -248,7 +248,7 @@ def check_db_schema(project_dir):
     log.debug('Updating database schema from %s' % project_dir)
     cwd = os.getcwd()
     os.chdir(project_dir)
-    for cmd in ('syncdb', 'migrate -all'):
+    for cmd in ('syncdb', 'migrate --all'):
         full_cmd = '%s manage.py %s' % (sys.executable, cmd)
         result = subprocess.call(full_cmd, shell=True)
         log.debug('%s returned: %s' % (full_cmd, result))
