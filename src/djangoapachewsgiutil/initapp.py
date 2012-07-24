@@ -214,8 +214,8 @@ def check_sanity(opt):
 
 def check_wsgi(project_dir, settings_dir):
     fname = p(j(settings_dir, 'wsgi.py'))
-    if os.path.isfile(fname):
-        return
+    #if os.path.isfile(fname):
+    #    return
     if project_dir == settings_dir:
         settings_module = 'settings'
     else:
@@ -286,13 +286,6 @@ def check_apache_site(sites_dir, domain, app_name, approot, wsgi_path):
         Allow from all
     </Directory>
 
-    Alias /uploads/ %(approot)s/%(app_name)s/uploads/
-
-    <Directory %(approot)s/%(app_name)s/uploads>
-        Order deny,allow
-        Allow from all
-    </Directory>
-
     LogLevel warn
     ErrorLog  %(approot)s/%(app_name)s/logs/apache_error.log
     CustomLog %(approot)s/%(app_name)s/logs/apache_access.log combined
@@ -324,9 +317,11 @@ def init_app(opt):
     check_dir(p(j(opt.approot, app_name, 'uploads')), pwd.getpwnam(opt.apacheuser))
     check_log_dir(opt.approot, app_name, opt.apacheuser)
     wsgi_path = p(j(opt.approot, app_name, 'wsgi.py'))
+    log.debug('Comparing %s and %s' % (opt.settings_dir, opt.project_dir))
     if opt.settings_dir and (opt.settings_dir != opt.project_dir):
         wsgi_app_name = os.path.basename(opt.settings_dir)
         wsgi_path = p(j(opt.approot, app_name, wsgi_app_name, 'wsgi.py'))
+    log.debug('WSGI path: %s' % wsgi_path)
     check_apache_site(opt.sitesdir, opt.domain, app_name, opt.approot, wsgi_path)
     check_sanity(opt)
     restart_apache()
